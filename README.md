@@ -85,13 +85,13 @@ private void requestSms() {
 ```
 * 4 the demo image.
 
-![grant1.gif](https://github.com/dfqin/Grantor/blob/master/grant1.gif)
+![默认](https://github.com/dfqin/PermissionGrantor/blob/master/grant1.gif)
 
 
-![grant2.gif](https://github.com/dfqin/Grantor/blob/master/grant2.gif)
+![授权拒绝时自定义Dialog](https://github.com/dfqin/PermissionGrantor/blob/master/grant2.gif)
 
 
-![grant3.gif](https://github.com/dfqin/Grantor/blob/master/grant3.gif)
+![授权拒绝时不显示Dialog](https://github.com/dfqin/PermissionGrantor/blob/master/grant3.gif)
 
 ### License
 [The MIT License (MIT)](http://opensource.org/licenses/MIT)
