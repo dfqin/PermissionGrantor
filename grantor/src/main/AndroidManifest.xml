@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.github.dfqin.grantor">
+
+    <application android:allowBackup="true" android:label="@string/app_name"
+        android:supportsRtl="true">
+
+        <activity
+            android:name="com.github.dfqin.grantor.PermissionActivity"
+            android:theme="@style/NoDisplay"
+            />
+
+    </application>
+
+</manifest>
