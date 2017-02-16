@@ -5,7 +5,7 @@
 
         <activity
             android:name="com.github.dfqin.grantor.PermissionActivity"
-            android:theme="@style/NoDisplay"
+            android:theme="@style/GrantorNoDisplay"
             />
 
     </application>
