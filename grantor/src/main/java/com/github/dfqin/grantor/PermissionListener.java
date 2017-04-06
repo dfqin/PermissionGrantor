@@ -10,13 +10,13 @@ public interface PermissionListener {
 
     /**
      * 通过授权
-     * @param permissions
+     * @param permission
      */
-    void permissionGranted(@NonNull String[] permissions);
+    void permissionGranted(@NonNull String[] permission);
 
     /**
      * 拒绝授权
-     * @param permissions
+     * @param permission
      */
-    void permissionDenied(@NonNull String[] permissions);
+    void permissionDenied(@NonNull String[] permission);
 }

@@ -2,7 +2,10 @@ package com.github.dfqin.permissiondemo;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +20,7 @@ import com.github.dfqin.grantor.PermissionsUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.provider.ContactsContract.Data;
 
 import java.util.ArrayList;
 
@@ -34,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.btn_contact).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_read_contact).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestContact();
+                requestReadContact();
             }
         });
 
@@ -48,28 +52,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.btn_write_contact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestWriteContact();
+            }
+        });
     }
 
 
     private void requestCemera() {
         if (PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA)) {
-            Toast.makeText(this, "访问摄像头", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "可以访问摄像头", Toast.LENGTH_LONG).show();
         } else {
             PermissionsUtil.requestPermission(this, new PermissionListener() {
                 @Override
                 public void permissionGranted(@NonNull String[] permissions) {
-                    Toast.makeText(MainActivity.this, "用户授予访问摄像头权限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "用户授权了访问摄像头", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void permissionDenied(@NonNull String[] permissions) {
                     Toast.makeText(MainActivity.this, "用户拒绝了访问摄像头", Toast.LENGTH_LONG).show();
                 }
-            }, new String[]{Manifest.permission.CAMERA});
+            }, Manifest.permission.CAMERA);
         }
     }
 
-    private void requestContact() {
+    private void requestReadContact() {
         PermissionsUtil.TipInfo tip = new PermissionsUtil.TipInfo("注意:", "我就是想看下你的通讯录", "不让看", "打开权限");
 
         if (PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS)) {
@@ -83,14 +93,25 @@ public class MainActivity extends AppCompatActivity {
             PermissionsUtil.requestPermission(this, new PermissionListener() {
                 @Override
                 public void permissionGranted(@NonNull String[] permissions) {
-                    Toast.makeText(MainActivity.this, "用户授予读取通讯录权限", Toast.LENGTH_LONG).show();
+                    JSONArray arr = null;
+                    try {
+                        arr = getContactInfo(MainActivity.this);
+                        if (arr.length() == 0) {
+                            Toast.makeText(MainActivity.this, "请确认通讯录不为空且有访问权限", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, arr.toString(), Toast.LENGTH_LONG).show();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void permissionDenied(@NonNull String[] permissions) {
                     Toast.makeText(MainActivity.this, "用户拒绝了读取通讯录权限", Toast.LENGTH_LONG).show();
                 }
-            }, new String[]{Manifest.permission.READ_CONTACTS}, true, tip);
+            }, new String[] { Manifest.permission.READ_CONTACTS }, true, tip);
         }
     }
 
@@ -108,8 +129,78 @@ public class MainActivity extends AppCompatActivity {
                 public void permissionDenied(@NonNull String[] permissions) {
                     Toast.makeText(MainActivity.this, "用户拒绝了读取消息权限", Toast.LENGTH_LONG).show();
                 }
-            }, new String[]{Manifest.permission.READ_SMS}, false, null);
+            }, new String[] { Manifest.permission.READ_SMS }, false, null);
         }
+    }
+
+    private void requestWriteContact() {
+        if (PermissionsUtil.hasPermission(this, Manifest.permission.WRITE_CONTACTS)) {
+            if (addContact("dfqin", "17717018888")) {
+                Toast.makeText(MainActivity.this, "成功添加联系人", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MainActivity.this, "添加联系人失败", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            PermissionsUtil.requestPermission(this, new PermissionListener() {
+                @Override
+                public void permissionGranted(@NonNull String[] permissions) {
+                    if (addContact("dfqin", "17717018888")) {
+                        Toast.makeText(MainActivity.this, "成功添加联系人", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "添加联系人失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void permissionDenied(@NonNull String[] permissions) {
+                    Toast.makeText(MainActivity.this, "用户拒绝了写通讯录", Toast.LENGTH_LONG).show();
+                }
+            }, Manifest.permission.WRITE_CONTACTS);
+        }
+    }
+
+    // 一个添加联系人信息的例子
+    private boolean addContact(String name, String phoneNumber) {
+        // 创建一个空的ContentValues
+        ContentValues values = new ContentValues();
+
+        Uri rawContactUri = getContentResolver().insert(ContactsContract.RawContacts.CONTENT_URI, values);
+        if (rawContactUri == null) {
+            return false;
+        }
+
+        long rawContactId = ContentUris.parseId(rawContactUri);
+        values.clear();
+
+        values.put(Data.RAW_CONTACT_ID, rawContactId);
+        // 内容类型
+        values.put(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        // 联系人名字
+        values.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name);
+        // 向联系人URI添加联系人名字
+        getContentResolver().insert(Data.CONTENT_URI, values);
+        values.clear();
+
+        values.put(Data.RAW_CONTACT_ID, rawContactId);
+        values.put(Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        // 联系人的电话号码
+        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber);
+        // 电话类型
+        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+        // 向联系人电话号码URI添加电话号码
+        getContentResolver().insert(Data.CONTENT_URI, values);
+        values.clear();
+
+        values.put(Data.RAW_CONTACT_ID, rawContactId);
+        values.put(Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+        // 联系人的Email地址
+        values.put(ContactsContract.CommonDataKinds.Email.DATA, "test@163.com");
+        // 电子邮件的类型
+        values.put(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+        // 向联系人Email URI添加Email数据
+        getContentResolver().insert(Data.CONTENT_URI, values);
+
+        return true;
     }
 
     private JSONArray getContactInfo(Activity activity) throws JSONException {

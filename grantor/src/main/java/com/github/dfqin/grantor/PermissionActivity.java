@@ -7,10 +7,7 @@ package com.github.dfqin.grantor;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +21,7 @@ public class PermissionActivity extends Activity {
     private static final int PERMISSION_REQUEST_CODE = 64;
     private boolean isRequireCheck;
 
-    private String[] pers;
+    private String[] permission;
     private String key;
     private boolean showTip;
     private PermissionsUtil.TipInfo tipInfo;
@@ -42,7 +39,7 @@ public class PermissionActivity extends Activity {
         }
 
         isRequireCheck = true;
-        pers = getIntent().getStringArrayExtra("permission");
+        permission = getIntent().getStringArrayExtra("permission");
         key = getIntent().getStringExtra("key");
         showTip = getIntent().getBooleanExtra("showTip", true);
         Serializable ser = getIntent().getSerializableExtra("tip");
@@ -58,10 +55,10 @@ public class PermissionActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         if (isRequireCheck) {
-            if (PermissionsUtil.allPermissionGranted(this, pers)) {
-                allPermissionsGranted();
+            if (PermissionsUtil.hasPermission(this, permission)) {
+                permissionsGranted();
             } else {
-                requestPermissions(pers); // 请求权限,回调时会触发onResume
+                requestPermissions(permission); // 请求权限,回调时会触发onResume
                 isRequireCheck = false;
             }
         } else {
@@ -70,18 +67,10 @@ public class PermissionActivity extends Activity {
     }
 
     // 请求权限兼容低版本
-    private void requestPermissions(String... permissions) {
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+    private void requestPermissions(String[] permission) {
+        ActivityCompat.requestPermissions(this, permission, PERMISSION_REQUEST_CODE);
     }
 
-    // 全部权限均已获取
-    private void allPermissionsGranted() {
-        PermissionListener listener = PermissionsUtil.fetchListener(key);
-        if (listener != null) {
-            listener.permissionGranted(pers);
-        }
-        finish();
-    }
 
     /**
      * 用户权限处理,
@@ -94,12 +83,15 @@ public class PermissionActivity extends Activity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CODE && PermissionsUtil.allPermissionsGranted(grantResults)) {
-            allPermissionsGranted();
+
+        //部分厂商手机系统返回授权成功时，厂商可以拒绝权限，所以要用PermissionChecker二次判断
+        if (requestCode == PERMISSION_REQUEST_CODE && PermissionsUtil.isGranted(grantResults)
+                && PermissionsUtil.hasPermission(this, permissions)) {
+            permissionsGranted();
         } else if (showTip){
             showMissingPermissionDialog();
         } else { //不需要提示用户
-            denyPermit();
+            permissionsDenied();
         }
     }
 
@@ -113,38 +105,39 @@ public class PermissionActivity extends Activity {
 
         builder.setNegativeButton(TextUtils.isEmpty(tipInfo.cancel) ? defaultCancel : tipInfo.cancel, new DialogInterface.OnClickListener(){
             @Override public void onClick(DialogInterface dialog, int which) {
-                denyPermit();
+                permissionsDenied();
             }
         });
 
         builder.setPositiveButton(TextUtils.isEmpty(tipInfo.ensure) ? defaultEnsure : tipInfo.ensure, new DialogInterface.OnClickListener() {
             @Override public void onClick(DialogInterface dialog, int which) {
-                startAppSettings();
+                PermissionsUtil.gotoSetting(PermissionActivity.this);
             }
         });
 
         builder.setCancelable(false);
         builder.show();
-
     }
 
-    // 启动应用的设置
-    private void startAppSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:" + getPackageName()));
-        startActivity(intent);
-    }
-
-
-    private void denyPermit() {
+    private void permissionsDenied() {
         PermissionListener listener = PermissionsUtil.fetchListener(key);
         if (listener != null) {
-            listener.permissionDenied(pers);
+            listener.permissionDenied(permission);
+        }
+        finish();
+    }
+
+    // 全部权限均已获取
+    private void permissionsGranted() {
+        PermissionListener listener = PermissionsUtil.fetchListener(key);
+        if (listener != null) {
+            listener.permissionGranted(permission);
         }
         finish();
     }
 
     protected void onDestroy() {
+        PermissionsUtil.fetchListener(key);
         super.onDestroy();
     }
 

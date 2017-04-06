@@ -19,10 +19,10 @@
         />
 
     <Button
-        android:id="@+id/btn_contact"
+        android:id="@+id/btn_read_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="访问通讯录"
+        android:text="读取通讯录"
         />
 
     <Button
@@ -30,6 +30,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="读取短信"
+        />
+
+    <Button
+        android:id="@+id/btn_write_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="写通讯录(添加一个联系人:dfqin)"
         />
 
 </LinearLayout>
