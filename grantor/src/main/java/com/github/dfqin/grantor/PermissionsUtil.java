@@ -80,12 +80,18 @@ public class PermissionsUtil {
      * @return
      */
     public static boolean hasPermission(@NonNull Context context, @NonNull String... permissions) {
+
+        if (permissions.length == 0) {
+            return false;
+        }
+
         for (String per : permissions ) {
             int result = PermissionChecker.checkSelfPermission(context, per);
             if ( result != PermissionChecker.PERMISSION_GRANTED) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -95,6 +101,11 @@ public class PermissionsUtil {
      * @return
      */
     public static boolean isGranted(@NonNull int... grantResult) {
+
+        if (grantResult.length == 0) {
+            return false;
+        }
+
         for (int result : grantResult) {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 return false;
