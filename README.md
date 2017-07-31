@@ -1,4 +1,4 @@
-******update 2017-07-31****
+###update 2017-07-31  
 fix bug on XiaoMi device
 
 ### Grantor
