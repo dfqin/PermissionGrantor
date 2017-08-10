@@ -1,5 +1,8 @@
-###update 2017-07-31  
+### update 2017-07-31  
 fix bug on XiaoMi device
+
+### update 2017-08-08
+update dialog style
 
 ### Grantor
 An Android permission grant util which is concise and easy to use. Normally you need to request permission in an Activity or Fragment and get the result by inheriting its method:
@@ -14,7 +17,7 @@ If you request permissions in other Class(for example in a widget), things will 
 * 1 add to module's dependencies.
 ```
 dependencies {
-      compile 'com.github.dfqin:grantor:2.2.0'
+      compile 'com.github.dfqin:grantor:2.3.0'
 }
 ```
 * 2 use in your code.
