@@ -20,7 +20,7 @@ If you request permissions in other Class(for example in a widget), things will 
 * 1 add to module's dependencies.
 ```
 dependencies {
-      compile 'com.github.dfqin:grantor:2.3.0'
+      compile 'com.github.dfqin:grantor:2.3.1'
 }
 ```
 * 2 use in your code.
