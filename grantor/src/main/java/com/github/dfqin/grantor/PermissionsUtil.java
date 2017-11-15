@@ -26,23 +26,23 @@ public class PermissionsUtil {
 
     /**
      * 申请授权，当用户拒绝时，会显示默认一个默认的Dialog提示用户
-     * @param activity
+     * @param context
      * @param listener
      * @param permission 要申请的权限
      */
-    public static void requestPermission(Activity activity, PermissionListener listener, String... permission) {
-        requestPermission(activity, listener, permission, true, null);
+    public static void requestPermission(Context context, PermissionListener listener, String... permission) {
+        requestPermission(context, listener, permission, true, null);
     }
 
     /**
      *  申请授权，当用户拒绝时，可以设置是否显示Dialog提示用户，也可以设置提示用户的文本内容
-     * @param activity
+     * @param context
      * @param listener
      * @param permission 需要申请授权的权限
      * @param showTip 当用户拒绝授权时，是否显示提示
      * @param tip 当用户拒绝时要显示Dialog设置
      */
-    public static void requestPermission(@NonNull Activity activity, @NonNull PermissionListener listener
+    public static void requestPermission(@NonNull Context context, @NonNull PermissionListener listener
             , @NonNull String[] permission, boolean showTip, @Nullable TipInfo tip) {
 
 
@@ -52,7 +52,7 @@ public class PermissionsUtil {
         }
 
         if (Build.VERSION.SDK_INT < 23) {
-            if (PermissionsUtil.hasPermission(activity, permission)) {
+            if (PermissionsUtil.hasPermission(context, permission)) {
                 listener.permissionGranted(permission);
             } else {
                 listener.permissionDenied(permission);
@@ -63,13 +63,13 @@ public class PermissionsUtil {
 
         String key = String.valueOf(System.currentTimeMillis());
         listenerMap.put(key, listener);
-        Intent intent = new Intent(activity, PermissionActivity.class);
+        Intent intent = new Intent(context, PermissionActivity.class);
         intent.putExtra("permission", permission);
         intent.putExtra("key", key);
         intent.putExtra("showTip", showTip);
         intent.putExtra("tip", tip);
 
-        activity.startActivity(intent);
+        context.startActivity(intent);
     }
 
 
