@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         if (PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA)) {
             Toast.makeText(MainActivity.this, "可以访问摄像头", Toast.LENGTH_LONG).show();
         } else {
-            PermissionsUtil.requestPermission(this, new PermissionListener() {
+            PermissionsUtil.requestPermission(getApplication(), new PermissionListener() {
                 @Override
                 public void permissionGranted(@NonNull String[] permissions) {
                     Toast.makeText(MainActivity.this, "用户授权了访问摄像头", Toast.LENGTH_LONG).show();
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestReadContact() {
         PermissionsUtil.TipInfo tip = new PermissionsUtil.TipInfo("注意:", "我就是想看下你的通讯录", "不让看", "打开权限");
 
-        if (PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS)) {
+        if (PermissionsUtil.hasPermission(getApplication(), Manifest.permission.READ_CONTACTS)) {
             try {
                 JSONArray arr = getContactInfo(this);
                 Toast.makeText(this, arr.toString(), Toast.LENGTH_LONG).show();

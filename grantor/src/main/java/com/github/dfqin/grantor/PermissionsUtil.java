@@ -44,8 +44,7 @@ public class PermissionsUtil {
      */
     public static void requestPermission(@NonNull Context context, @NonNull PermissionListener listener
             , @NonNull String[] permission, boolean showTip, @Nullable TipInfo tip) {
-
-
+        
         if (listener == null) {
             Log.e(TAG, "listener is null");
             return;
@@ -68,6 +67,7 @@ public class PermissionsUtil {
         intent.putExtra("key", key);
         intent.putExtra("showTip", showTip);
         intent.putExtra("tip", tip);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         context.startActivity(intent);
     }
