@@ -1,3 +1,6 @@
+### update 2017-11-15
+申请授权不依赖于Activity对象
+
 ### update 2017-07-31  
 fix bug on XiaoMi device
 
@@ -20,7 +23,7 @@ If you request permissions in other Class(for example in a widget), things will 
 * 1 add to module's dependencies.
 ```
 dependencies {
-      compile 'com.github.dfqin:grantor:2.3.1'
+      compile 'com.github.dfqin:grantor:2.4'
 }
 ```
 * 2 use in your code.
