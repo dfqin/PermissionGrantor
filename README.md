@@ -1,5 +1,3 @@
-### update 2017-11-15
-申请授权不依赖于Activity对象
 
 ### update 2017-07-31  
 fix bug on XiaoMi device
@@ -9,6 +7,9 @@ update dialog style
 
 ### update 2017-08-29
 set minSdkVersion to 14
+
+### update 2017-11-15
+申请授权不依赖于Activity对象
 
 ### Grantor
 An Android permission grant util which is concise and easy to use. Normally you need to request permission in an Activity or Fragment and get the result by inheriting its method:
