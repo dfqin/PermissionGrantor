@@ -29,7 +29,7 @@ dependencies {
 ```
 * 2 use in your code.
 ```
-PermissionsUtil.requestPermission(Activity activity, PermissionListener listener, String[] permissions);
+PermissionsUtil.requestPermission(Context context, PermissionListener listener, String[] permissions);
 ```
 * 3 some demo.
 
