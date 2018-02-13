@@ -50,26 +50,24 @@ public class PermissionsUtil {
             return;
         }
 
-        if (Build.VERSION.SDK_INT < 23) {
-            if (PermissionsUtil.hasPermission(context, permission)) {
-                listener.permissionGranted(permission);
-            } else {
+        if (PermissionsUtil.hasPermission(context, permission)) {
+            listener.permissionGranted(permission);
+        } else {
+            if (Build.VERSION.SDK_INT < 23) {
                 listener.permissionDenied(permission);
+            } else {
+                String key = String.valueOf(System.currentTimeMillis());
+                listenerMap.put(key, listener);
+                Intent intent = new Intent(context, PermissionActivity.class);
+                intent.putExtra("permission", permission);
+                intent.putExtra("key", key);
+                intent.putExtra("showTip", showTip);
+                intent.putExtra("tip", tip);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(intent);
             }
-            Log.e(TAG, "API level : " + Build.VERSION.SDK_INT + "不需要申请动态权限!");
-            return;
         }
-
-        String key = String.valueOf(System.currentTimeMillis());
-        listenerMap.put(key, listener);
-        Intent intent = new Intent(context, PermissionActivity.class);
-        intent.putExtra("permission", permission);
-        intent.putExtra("key", key);
-        intent.putExtra("showTip", showTip);
-        intent.putExtra("tip", tip);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        context.startActivity(intent);
     }
 
 
